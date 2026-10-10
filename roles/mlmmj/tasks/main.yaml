@@ -1,0 +1,30 @@
+---
+
+- name: epel-release install
+  dnf:
+    name: epel-release
+    state: present
+
+- name: mlmmj install
+  dnf:
+    name: mlmmj
+    state: present
+
+- name: copy mlmmj-maintd unit files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/{{ item }}
+    mode: "0644"
+  notify: systemd reload
+  loop:
+    - mlmmj-maintd.service
+    - mlmmj-maintd.timer
+
+- name: flush handlers to systemd reload if needed
+  meta: flush_handlers
+
+- name: mlmmj-maintd.timer enabled
+  systemd:
+    name: mlmmj-maintd.timer
+    state: started
+    enabled: true

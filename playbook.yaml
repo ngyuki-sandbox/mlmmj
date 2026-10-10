@@ -1,0 +1,13 @@
+- hosts: all
+  roles:
+    - { role: postfix, tags: [postfix] }
+    - { role: mlmmj, tags: [mlmmj] }
+  tasks:
+    - include_role:
+        name: ml_manage
+        apply:
+          tags: [ml_manage]
+      tags: [ml_manage]
+      loop: "{{ mailing_lists }}"
+      loop_control:
+        loop_var: ml

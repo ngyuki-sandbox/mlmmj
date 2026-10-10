@@ -1,0 +1,53 @@
+---
+
+- name: create /var/spool/mlmmj/{{ ml.name }}
+  shell:
+    cmd: /usr/bin/mlmmj-make-ml -L "$ml_name" -d "$mail_domain" -c mlmmj -s /var/spool/mlmmj
+    creates: "/var/spool/mlmmj/{{ ml.name }}"
+  environment:
+    ml_name: "{{ ml.name }}"
+    mail_domain: "{{ mail_domain }}"
+
+- name: chown /var/spool/mlmmj/{{ ml.name }}
+  file:
+    path: /var/spool/mlmmj/{{ ml.name }}
+    state: directory
+    owner: mlmmj
+    group: mlmmj
+    recurse: true
+
+- name: configure /var/spool/mlmmj/{{ ml.name }}/control/
+  copy:
+    dest: /var/spool/mlmmj/{{ ml.name }}/control/{{ item.key }}
+    content: "{{ item.value }}"
+    owner: mlmmj
+    group: mlmmj
+    mode: "0644"
+  loop: "{{ control_files | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  vars:
+    control_files:
+      listaddress: "{{ ml.name }}@{{ mail_domain }}\n"
+      prefix: "[{{ ml.name }}]\n"
+      closedlist: ""
+      noarchive: ""
+      customheaders: "Reply-To: {{ ml.name }}@{{ mail_domain }}\n"
+
+- name: remove unnecessary files in /var/spool/mlmmj/{{ ml.name }}/control/
+  file:
+    path: /var/spool/mlmmj/{{ ml.name }}/control/{{ item }}
+    state: absent
+  loop:
+    - subonlypost
+
+- name: configure /var/spool/mlmmj/{{ ml.name }}/subscribers.d/members
+  copy:
+    dest: /var/spool/mlmmj/{{ ml.name }}/subscribers.d/members
+    content: |
+      {% for member in ml.members | default([]) %}
+      {{ member }}
+      {% endfor %}
+    owner: mlmmj
+    group: mlmmj
+    mode: "0644"

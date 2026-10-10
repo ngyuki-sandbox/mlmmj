@@ -1,0 +1,14 @@
+---
+
+- name: postfix rebuild config
+  shell:
+    cmd: |
+      postalias /etc/postfix/aliases
+      postmap /etc/postfix/virtual
+      postmap /etc/postfix/transport
+      postmap /etc/postfix/relay_recipients
+
+- name: postfix reload
+  systemd:
+    name: postfix
+    state: reloaded

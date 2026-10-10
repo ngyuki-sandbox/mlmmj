@@ -1,0 +1,23 @@
+all:
+  hosts:
+    mlmmj-app:
+      ansible_connection: docker
+      ansible_python_interpreter: /usr/bin/python3
+      ansible_become: false
+  vars:
+    mail_hostname: "ml.localdomain"
+    mail_domain: "ml.example.internal"
+    mail_mynetworks: "127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16"
+    mail_relayhost: "[mailpit]:1025"
+    mailing_lists:
+      - name: announcement
+        members:
+          - alice@example.com
+          - carol@example.com
+          - dave@example.com
+
+      - name: dev-team
+        members:
+          - alice@example.com
+          - dev1@example.com
+          - dev2@example.com

@@ -1,0 +1,19 @@
+services:
+  mlmmj:
+    build: .
+    container_name: mlmmj-app
+    hostname: ml.localdomain
+    privileged: true
+    volumes:
+      - .:/workspace
+    ports:
+      - "10025:25"
+    depends_on:
+      - mailpit
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mlmmj-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"

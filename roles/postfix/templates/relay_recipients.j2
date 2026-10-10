@@ -1,0 +1,4 @@
+# ANSIBLE MANAGED FILE
+{% for ml in mailing_lists %}
+{{ ml.name }}@{{ mail_domain }} OK
+{% endfor %}

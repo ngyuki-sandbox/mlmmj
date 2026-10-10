@@ -1,0 +1,29 @@
+---
+
+- name: postfix install
+  dnf:
+    name: postfix
+    state: present
+
+- name: copy {{ item }}
+  template:
+    src: "{{ item }}.j2"
+    dest: /etc/postfix/{{ item }}
+    mode: "0644"
+  notify:
+    - postfix rebuild config
+    - postfix reload
+  loop:
+    - master.cf
+    - main.cf
+    - aliases
+    - virtual
+    - transport
+    - header_checks
+    - relay_recipients
+
+- name: postfix enabled
+  systemd:
+    name: postfix
+    state: started
+    enabled: true
